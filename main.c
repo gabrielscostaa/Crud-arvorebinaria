@@ -220,7 +220,7 @@ TreeNode *construirArvoreBalanceada(ListNode **lista, int n)
     raiz->disponivel = (*lista)->disponivel;
     raiz->left = left;
 
-    
+
     *lista = (*lista)->next;
 
 
@@ -278,6 +278,9 @@ void listarAssentosReservados(TreeNode *raiz)
 
 void reservarAssento(TreeNode *raiz, int poltrona)
 {
+    printf("Assentos Disponiveis: \n");
+    listarAssentosDisponiveis(raiz);
+
     TreeNode *atual = raiz;
     while (atual != NULL)
     {
@@ -317,6 +320,14 @@ int main()
 {
     TreeNode *raiz = NULL;
     int opcao, poltrona;
+
+    printf("  _______ _ _____    ______    ________   ______    _______   \n");
+    printf(" |__   __| |_____| ||______|| |__   __|  ||_____|  / ______\ \n");
+    printf("    | |  | |___    ||      ||     | |    ||_____|  ||      || \n");
+    printf("    | |  | '___|   ||______||     | |    ||||      ||      || \n");
+    printf("    | |  | |_____  ||      ||     | |    ||  ||.   ||______||       \n");
+    printf("    |_|  |_|_____| ||      ||     | |    ||    ||.  \______/      \n");
+
 
     do
     {
