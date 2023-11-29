@@ -1,199 +1,399 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Definindo a estrutura de um nó da árvore binária
-struct Node {
-    int poltrona;       // Número do assento
-    int disponivel;     // Status de disponibilidade (1 - Disponível, 0 - Indisponível)
-    struct Node* esq;    // Ponteiro para o filho à esquerda
-    struct Node* dir;    // Ponteiro para o filho à direita
+struct TreeNode
+{
+    int poltrona;
+    int disponivel;
+    struct TreeNode *left;
+    struct TreeNode *right;
 };
 
-// Renomeando o ponteiro para a estrutura Node como Teatro
-typedef struct Node* Teatro;
-
-// Estrutura para ajudar na impressão da árvore (não afeta a lógica principal)
-struct Trunk {
-    struct Trunk* prev;
-    char* str;
+struct ListNode
+{
+    int poltrona;
+    int disponivel;
+    struct ListNode *prev;
+    struct ListNode *next;
 };
 
-// Função para criar um novo nó da árvore
-struct Node* criarNo(int poltrona) {
-    struct Node* no = (struct Node*)malloc(sizeof(struct Node));
-    if (no != NULL) {
+typedef struct TreeNode TreeNode;
+typedef struct ListNode ListNode;
+
+//    Área que representa códigos relacionados à lista duplamente encadeada
+// ---------------------------------------------------------------------------
+
+ListNode *criarNoLista(int poltrona, int disponivel);
+void insereOrdenadoLista(ListNode **lista, int poltrona, int disponivel);
+void imprimirLista(ListNode *lista);
+void liberaLista(ListNode *lista);
+void extrairElementos(TreeNode *raiz, ListNode **lista);
+
+
+ListNode *criarNoLista(int poltrona, int disponivel)
+{
+    ListNode *novo = (ListNode *)malloc(sizeof(ListNode));
+    if (novo != NULL)
+    {
+        novo->poltrona = poltrona;
+        novo->disponivel = disponivel;
+        novo->prev = NULL;
+        novo->next = NULL;
+    }
+    return novo;
+}
+
+void insereOrdenadoLista(ListNode **lista, int poltrona, int disponivel)
+{
+    ListNode *novo = criarNoLista(poltrona, disponivel);
+    if (novo != NULL)
+    {
+        ListNode *atual = *lista;
+
+        if (*lista == NULL || (*lista)->poltrona >= novo->poltrona)
+        {
+            novo->next = *lista;
+            if (*lista != NULL)
+            {
+                (*lista)->prev = novo;
+            }
+            *lista = novo;
+        }
+        else
+        {
+            while (atual->next != NULL && atual->next->poltrona < novo->poltrona)
+            {
+                atual = atual->next;
+            }
+            novo->next = atual->next;
+            if (atual->next != NULL)
+            {
+                atual->next->prev = novo;
+            }
+            atual->next = novo;
+            novo->prev = atual;
+        }
+    }
+    else
+    {
+        printf("Erro na alocação de memória.\n");
+    }
+}
+
+void imprimirLista(ListNode *lista)
+{
+    ListNode *atual = lista;
+    printf("Lista: ");
+    while (atual != NULL)
+    {
+        printf("%d ", atual->poltrona);
+        atual = atual->next;
+    }
+    printf("\n");
+}
+
+void liberaLista(ListNode *lista)
+{
+    ListNode *atual = lista;
+    while (atual != NULL)
+    {
+        ListNode *temp = atual;
+        atual = atual->next;
+        free(temp);
+    }
+}
+
+void extrairElementos(TreeNode *raiz, ListNode **lista)
+{
+    if (raiz != NULL)
+    {
+        extrairElementos(raiz->left, lista);
+        insereOrdenadoLista(lista, raiz->poltrona, raiz->disponivel);
+        extrairElementos(raiz->right, lista);
+    }
+}
+
+//      Área que representa a árvore binária
+// --------------------------------------------------
+
+TreeNode *criarNo(int poltrona);
+TreeNode *inserirNo(TreeNode *raiz, int poltrona);
+void preOrder(TreeNode *root);
+void inOrder(TreeNode *root);
+void postOrder(TreeNode *root);
+void liberaArvore(TreeNode *raiz);
+TreeNode *construirArvoreBalanceada(ListNode **lista, int n);
+void balancearArvore(TreeNode **raiz);
+
+
+struct TreeNode *criarNo(int poltrona)
+{
+    struct TreeNode *no = (struct TreeNode *)malloc(sizeof(struct TreeNode));
+    if (no != NULL)
+    {
         no->poltrona = poltrona;
         no->disponivel = 1;
-        no->esq = NULL;
-        no->dir = NULL;
-    } else {
-        printf("Erro na alocação...\n");
+        no->left = NULL;
+        no->right = NULL;
+    }
+    else
+    {
+        printf("Erro na alocacao...\n");
         exit(0);
     }
     return no;
 }
 
-// Função para inserir um nó na árvore
-struct Node* inserirNo(struct Node* raiz, int poltrona) {
-    if (raiz == NULL) {
-        return criarNo(poltrona);  // Se a raiz é nula, cria um novo nó
+TreeNode *inserirNo(TreeNode *raiz, int poltrona)
+{
+    if (raiz == NULL)
+    {
+        return criarNo(poltrona);
     }
 
-    if (poltrona == raiz->poltrona) {
-        printf("Assento %d já existe.\n", poltrona);
-        return raiz;  // Se o assento já existe, retorna a raiz sem modificar
-    } else if (poltrona < raiz->poltrona) {
-        raiz->esq = inserirNo(raiz->esq, poltrona);  // Se for menor, insere à esquerda
-    } else if (poltrona > raiz->poltrona) {
-        raiz->dir = inserirNo(raiz->dir, poltrona);  // Se for maior, insere à direita
+    if (poltrona < raiz->poltrona)
+    {
+        raiz->left = inserirNo(raiz->left, poltrona);
     }
-
+    else if (poltrona > raiz->poltrona)
+    {
+        raiz->right = inserirNo(raiz->right, poltrona);
+    }
+    else
+    {
+        printf("Poltrona ja ocupada.\n");
+    }
     return raiz;
 }
 
-// Função auxiliar para exibir a árvore (não afeta a lógica principal)
-void showTrunks(struct Trunk* p) {
-    while (p != NULL) {
-        printf("%s", p->str);
-        p = p->prev;
+void preOrder(TreeNode *root)
+{
+    if (root != NULL)
+    {
+        printf("%d ", root->poltrona);
+        preOrder(root->left);
+        preOrder(root->right);
     }
 }
 
-// Função auxiliar para criar um novo nó para ajudar na exibição da árvore (não afeta a lógica principal)
-struct Trunk* newTrunk(struct Trunk* prev, char* str) {
-    struct Trunk* trunk = (struct Trunk*)malloc(sizeof(struct Trunk));
-    trunk->str = str;
-    trunk->prev = prev;
-    return trunk;
+void inOrder(TreeNode *root)
+{
+    if (root != NULL)
+    {
+        inOrder(root->left);
+        printf("%d ", root->poltrona);
+        inOrder(root->right);
+    }
 }
 
-// Função auxiliar para exibir a árvore (não afeta a lógica principal)
-void imprimeArvore(struct Node* raiz, struct Trunk* prev, int isLeft) {
-    if (raiz == NULL) {
-        return;
+void postOrder(TreeNode *root)
+{
+    if (root != NULL)
+    {
+        postOrder(root->left);
+        postOrder(root->right);
+        printf("%d ", root->poltrona);
     }
-
-    char* prev_str = "    ";
-    struct Trunk* trunk = newTrunk(prev, prev_str);
-    imprimeArvore(raiz->dir, trunk, 1);
-
-    if (!prev) {
-        trunk->str = "---";
-    } else if (isLeft) {
-        trunk->str = ".---";
-        prev_str = "   |";
-    } else {
-        trunk->str = "`---";
-        prev->str = prev_str;
-    }
-
-    showTrunks(trunk);
-    printf("%d (%s)\n", raiz->poltrona, (raiz->disponivel == 1) ? "Disponível" : "Indisponível");
-
-    if (prev) {
-        prev->str = prev_str;
-    }
-    trunk->str = "   |";
-    imprimeArvore(raiz->esq, trunk, 0);
 }
 
-// Função para reservar um assento
-void reservarAssento(struct Node* raiz) {
-    int numeroPoltrona;
-    printf("Digite o numero do assento desejado: ");
-    scanf("%d", &numeroPoltrona);
+void liberaArvore(TreeNode *raiz)
+{
+    if (raiz != NULL)
+    {
+        liberaArvore(raiz->left);
+        liberaArvore(raiz->right);
+        free(raiz);
+    }
+}
 
-    // Encontrar o assento na árvore e reservar
-    struct Node* atual = raiz;
-    while (atual != NULL) {
-        if (numeroPoltrona == atual->poltrona) {
-            if (atual->disponivel == 1) {
-                atual->disponivel = 0;  // Marcar como indisponível
-                printf("Assento %d reservado com sucesso!\n", numeroPoltrona);
-            } else {
-                printf("Assento %d indisponível.\n", numeroPoltrona);
+TreeNode *construirArvoreBalanceada(ListNode **lista, int n)
+{
+   if (n <= 0 || lista == NULL || *lista == NULL) {
+        return NULL;
+    }
+
+    //constroi árvore esquerda
+    TreeNode *left = construirArvoreBalanceada(lista, n / 2);
+
+    //constroi a raiz
+    TreeNode *raiz = criarNo((*lista)->poltrona);
+    raiz->disponivel = (*lista)->disponivel;
+    raiz->left = left;
+
+    
+    *lista = (*lista)->next;
+
+
+    //constroi arvore direita
+    raiz->right = construirArvoreBalanceada(lista, n - n / 2 - 1);
+
+    return raiz;
+}
+void balancearArvore(TreeNode **raiz) {
+    ListNode *lista = NULL;
+    extrairElementos(*raiz, &lista);
+
+    int count = 0;
+    ListNode *tmp = lista;
+    while (tmp != NULL) {
+        count++;
+        tmp = tmp->next;
+    }
+
+    *raiz = construirArvoreBalanceada(&lista, count);
+}
+//    Área que representa a reserva de poltronas
+// --------------------------------------------------
+
+void listarAssentosDisponiveis(TreeNode *raiz);
+void listarAssentosReservados(TreeNode *raiz);
+void reservarAssento(TreeNode *raiz, int poltrona);
+
+
+void listarAssentosDisponiveis(TreeNode *raiz)
+{
+    if (raiz != NULL)
+    {
+        if (raiz->disponivel)
+        {
+            printf("Assento %d disponivel\n", raiz->poltrona);
+        }
+        listarAssentosDisponiveis(raiz->left);
+        listarAssentosDisponiveis(raiz->right);
+    }
+}
+
+void listarAssentosReservados(TreeNode *raiz)
+{
+    if (raiz != NULL)
+    {
+        if (!raiz->disponivel)
+        {
+            printf("Assento %d reservado\n", raiz->poltrona);
+        }
+        listarAssentosReservados(raiz->left);
+        listarAssentosReservados(raiz->right);
+    }
+}
+
+void reservarAssento(TreeNode *raiz, int poltrona)
+{
+    TreeNode *atual = raiz;
+    while (atual != NULL)
+    {
+        if (atual->poltrona == poltrona)
+        {
+            if (atual->disponivel)
+            {
+                atual->disponivel = 0;
+                printf("Assento %d reservado com sucesso.\n", poltrona);
+            }
+            else
+            {
+                printf("Assento %d ja esta reservado.\n", poltrona);
             }
             return;
-        } else if (numeroPoltrona < atual->poltrona) {
-            atual = atual->esq;
-        } else {
-            atual = atual->dir;
         }
+        atual = (poltrona < atual->poltrona) ? atual->left : atual->right;
     }
-
-    // Se o assento não for encontrado
-    printf("Assento %d não encontrado.\n", numeroPoltrona);
+    printf("Assento %d nao encontrado.\n", poltrona);
+    return;
 }
 
-// Função para adicionar novos assentos
-void adicionarAssentos(struct Node** raiz) {
-    int quantidade;
-    printf("Digite a quantidade de novos assentos a serem adicionados: ");
-    scanf("%d", &quantidade);
-
-        for (int i = 0; i < quantidade; ++i) {
-        int numeroPoltrona;
-        printf("Digite o numero do novo assento: ");
-        scanf("%d", &numeroPoltrona);
-
-        // Inserir assento apenas se não existir
-        if (inserirNo(*raiz, numeroPoltrona) != NULL) {
-            printf("Assento %d adicionado com sucesso!\n", numeroPoltrona);
-        }
-    }
+void menu()
+{
+    printf("\nMenu:\n");
+    printf("1. Inserir Assento\n");
+    printf("2. Balancear Arvore\n");
+    printf("3. Exibir Arvore (Pre-Ordem)\n");
+    printf("4. Exibir Arvore (In-Ordem)\n");
+    printf("5. Exibir Arvore (Pos-Ordem)\n");
+    printf("6. Reservar Assento\n");
+    printf("7. Sair\n");
+    printf("Escolha uma opcao: ");
 }
 
-// Função para exibir o menu de opções
-void menu() {
-    printf("\nEscolha uma opcao:\n");
-    printf("1. Mostrar mapa de assentos\n");
-    printf("2. Reservar assento\n");
-    printf("3. Adicionar assentos\n");
-    printf("4. Sair\n");
-}
+int main()
+{
+    TreeNode *raiz = NULL;
+    int opcao, poltrona;
 
-// Função principal
-int main() {
-    struct Node* raiz = NULL;
-
-    // Exemplo de inserção de alguns assentos na árvore
-    raiz = inserirNo(raiz, 50);
-    raiz = inserirNo(raiz, 30);
-    raiz = inserirNo(raiz, 20);
-    raiz = inserirNo(raiz, 40);
-    raiz = inserirNo(raiz, 70);
-    raiz = inserirNo(raiz, 60);
-    raiz = inserirNo(raiz, 80);
-
-    int opcao;
-
-    do {
+    do
+    {
         menu();
         printf("Escolha uma opcao: ");
         scanf("%d", &opcao);
 
-        switch (opcao) {
-            case 1:
-                imprimeArvore(raiz, NULL, 0);
-                break;
+        switch (opcao)
+        {
+        case 1:
+            system("cls");
+            printf("Digite o numero do assento: ");
+            scanf("%d", &poltrona);
+            raiz = inserirNo(raiz, poltrona);
+            break;
+        case 2:
+            system("cls");
+            balancearArvore(&raiz);
+            break;
+        case 3:
+            system("cls");
+            preOrder(raiz);
+            break;
+        case 4:
+            system("cls");
+            inOrder(raiz);
+            break;
+        case 5:
+            system("cls");
+            postOrder(raiz);
+            break;
+        case 6:
+            system("cls");
+            int opcaoAssentos = 0;
+            while (opcaoAssentos != 4)
+            {
+                printf("Selecione opcao desejada\n");
+                printf("1. Assentos disponiveis:\n");
+                printf("2. Assentos reservados:\n");
+                printf("3. Reservar assento:\n");
+                printf("4. Sair\n");
+                printf("Escolha uma opcao: ");
+                scanf("%d", &opcaoAssentos);
 
-            case 2:
-                reservarAssento(raiz);
-                break;
-
-            case 3:
-                adicionarAssentos(&raiz);
-                break;
-
-            case 4:
-                printf("Saindo...\n");
-                break;
-
-            default:
-                printf("Opcao invalida. Tente novamente.\n");
+                switch (opcaoAssentos)
+                {
+                case 1:
+                    system("cls");
+                    listarAssentosDisponiveis(raiz);
+                    break;
+                case 2:
+                    system("cls");
+                    listarAssentosReservados(raiz);
+                    break;
+                case 3:
+                    system("cls");
+                    printf("Digite o numero do assento que deseja reservar: ");
+                    scanf("%d", &poltrona);
+                    reservarAssento(raiz, poltrona);
+                    break;
+                case 4:
+                    system("cls");
+                    printf("Saindo da area de reserva de poltronas\n");
+                    break;
+                default:
+                    printf("Opcao invalida. Tente novamente.\n");
+                }
+            }
+            break;
+        case 7:
+            printf("Saindo...\n");
+            break;
+        default:
+            printf("Opcao invalida. Tente novamente.\n");
         }
+    } while (opcao != 7);
 
-    } while (opcao != 4);
-
+    liberaArvore(raiz);
     return 0;
 }
