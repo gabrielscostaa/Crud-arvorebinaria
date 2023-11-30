@@ -124,6 +124,8 @@ void postOrder(TreeNode *root);
 void liberaArvore(TreeNode *raiz);
 TreeNode *construirArvoreBalanceada(ListNode **lista, int n);
 void balancearArvore(TreeNode **raiz);
+TreeNode *remove_atual(TreeNode *atual);
+void remove_NO_desejado(TreeNode **raiz);
 
 
 struct TreeNode *criarNo(int poltrona)
@@ -242,6 +244,79 @@ void balancearArvore(TreeNode **raiz) {
 
     *raiz = construirArvoreBalanceada(&lista, count);
 }
+
+TreeNode *remove_atual(TreeNode *atual) {
+    TreeNode *no1, *no2;
+    if (atual->left == NULL) {
+        no2 = atual->right;
+        free(atual);
+        return no2;
+    }
+    no1 = atual;
+    no2 = atual->left;
+    while (no2->right != NULL) {
+        no1 = no2;
+        no2 = no2->right;
+    }
+    if (no1 != atual) {
+        no1->right = no2->left;
+        no2->left = atual->left;
+    }
+    no2->right = atual->right;
+    free(atual);
+    return no2;
+}
+
+void remove_NO_desejado(TreeNode **raiz)
+{
+    if (raiz == NULL || *raiz == NULL) return;
+    TreeNode *atual = *raiz;
+    TreeNode *ant = NULL;
+    int num = 0;
+    int found = 0;
+    printf("Digite o numero que deseja remover: ");
+    scanf("%d", &num);
+    while (atual != NULL)
+    {
+        if (num == atual->poltrona)
+        {
+            if (atual == *raiz)
+            {
+                *raiz = remove_atual(atual);
+            }
+            else
+            {
+                if (ant->right == atual)
+                {
+                    ant->right = remove_atual(atual);
+                }
+                else
+                {
+                    ant->left = remove_atual(atual);
+                }
+            }
+            found = 1;
+            break;
+        }
+        else
+        {
+            ant = atual;
+            if (num > atual->poltrona)
+            {
+                atual = atual->right;
+            }
+            else
+            {
+                atual = atual->left;
+            }
+        }
+    }
+    if (!found)
+    {
+        printf("Elemento nao encontrado!\n");
+    }
+}
+
 //    Área que representa a reserva de poltronas
 // --------------------------------------------------
 
@@ -349,7 +424,8 @@ void menu()
     printf("4. Exibir Arvore (In-Ordem)\n");
     printf("5. Exibir Arvore (Pos-Ordem)\n");
     printf("6. Reservar Assento\n");
-    printf("7. Sair\n");
+    printf("7. Remover Assento\n");
+    printf("8. Sair\n");
     printf("Escolha uma opcao: ");
 }
 
@@ -359,11 +435,11 @@ int main()
     int opcao, poltrona;
 
     printf("  _______ _ _____    ______    ________   ______    _______   \n");
-    printf(" |__   __| |_____| ||______|| |__   __|  ||_____|  / ______\ \n");
-    printf("    | |  | |___    ||      ||     | |    ||_____|  ||      || \n");
-    printf("    | |  | '___|   ||______||     | |    ||||      ||      || \n");
-    printf("    | |  | |_____  ||      ||     | |    ||  ||.   ||______||       \n");
-    printf("    |_|  |_|_____| ||      ||     | |    ||    ||.  \______/      \n");
+    printf(" |__   __| |_____| ||______|| |__   __|  ||_____|  / ______|| \n");
+    printf("    | |  | |___    ||      ||    | |     ||_____|  ||      || \n");
+    printf("    | |  | '___|   ||______||    | |     ||||      ||      || \n");
+    printf("    | |  | |_____  ||      ||    | |     ||  ||.   ||______||       \n");
+    printf("    |_|  |_|_____| ||      ||    | |     ||    ||. ||______/      \n");
 
 
     do
@@ -435,12 +511,16 @@ int main()
             }
             break;
         case 7:
+            system("cls");
+            remove_NO_desejado(&raiz);
+            break;
+        case 8:
             printf("Saindo...\n");
             break;
         default:
             printf("Opcao invalida. Tente novamente.\n");
         }
-    } while (opcao != 7);
+    } while (opcao != 8);
 
     liberaArvore(raiz);
     return 0;
