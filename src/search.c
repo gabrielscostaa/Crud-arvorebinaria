@@ -47,7 +47,6 @@ void listarTodosAssentos (TreeNode *raiz) {
 void reservarAssento(TreeNode *raiz, int poltrona) {
     TreeNode *atual = raiz;
 
-    // Encontrar o nó correspondente à poltrona
     while (atual != NULL && atual->poltrona != poltrona)
     {
         if (poltrona < atual->poltrona)
@@ -56,14 +55,12 @@ void reservarAssento(TreeNode *raiz, int poltrona) {
             atual = atual->right;
     }
 
-    // Verificar se a poltrona foi encontrada
     if (atual == NULL)
     {
         printf("Assento %d nao encontrado.\n", poltrona);
         return;
     }
 
-    // Oferecer opções ao usuário
     char escrito[100];
     int escolha;
     do {
@@ -79,7 +76,6 @@ void reservarAssento(TreeNode *raiz, int poltrona) {
         escolha = -1;
     }
 
-    // Realizar a ação com base na escolha do usuário
     switch (escolha)
     {
     case 1:
@@ -87,6 +83,7 @@ void reservarAssento(TreeNode *raiz, int poltrona) {
         if (atual->disponivel)
         {
             atual->disponivel = 0;
+            escolha = 0;
             printf("Assento %d reservado com sucesso.\n", poltrona);
         }
         else
@@ -99,6 +96,7 @@ void reservarAssento(TreeNode *raiz, int poltrona) {
         if (!atual->disponivel)
         {
             atual->disponivel = 1;
+            escolha = 0;
             printf("Assento %d liberado com sucesso.\n", poltrona);
         }
         else

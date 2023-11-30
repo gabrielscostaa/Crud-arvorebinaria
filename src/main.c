@@ -1,10 +1,5 @@
 #include <main.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <stdbool.h>
-
 bool isNumber (char *str) {
     while (*str != '\0')
     {
