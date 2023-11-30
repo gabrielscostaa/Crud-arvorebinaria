@@ -28,6 +28,10 @@ TreeNode *construirArvoreBalanceada(ListNode **lista, int n) {
 }
 
 void balancearArvore(TreeNode **raiz) {
+    if (*raiz == NULL) {
+        printf("Arvore vazia!\n");
+        return;
+    }
     ListNode *lista = NULL;
     extrairElementos(*raiz, &lista);
 
@@ -39,4 +43,5 @@ void balancearArvore(TreeNode **raiz) {
     }
 
     *raiz = construirArvoreBalanceada(&lista, count);
+    printf("Arvore balanceada com sucesso!\n");
 }

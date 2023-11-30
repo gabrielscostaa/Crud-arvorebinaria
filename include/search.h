@@ -5,6 +5,7 @@
 
 void listarAssentosDisponiveis(TreeNode *raiz);
 void listarAssentosReservados(TreeNode *raiz);
+void listarTodosAssentos(TreeNode *raiz);
 void reservarAssento(TreeNode *raiz, int poltrona);
 
 #endif // SEARCH_H

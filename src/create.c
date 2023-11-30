@@ -37,7 +37,7 @@ TreeNode *inserirNo(TreeNode *raiz, int poltrona) {
     }
     else
     {
-        printf("Poltrona ja ocupada.\n");
+        printf("Ja existe a poltrona %d.\n", poltrona);
     }
     return raiz;
 }

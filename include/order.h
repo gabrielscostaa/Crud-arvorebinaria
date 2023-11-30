@@ -6,5 +6,6 @@
 void preOrder(TreeNode *root);
 void inOrder(TreeNode *root);
 void postOrder(TreeNode *root);
+void exibirArvore(TreeNode *root);
 
 #endif // ORDER_H

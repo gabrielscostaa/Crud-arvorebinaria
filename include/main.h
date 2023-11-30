@@ -3,8 +3,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
-
+#ifdef _WIN32
+    #define CLEAR "cls"
+#elif __linux__
+    #define CLEAR "clear"
+#endif
 
 struct ListNode {
     int poltrona;
@@ -43,14 +48,19 @@ void liberaArvore(TreeNode *raiz);
 void preOrder(TreeNode *root);
 void inOrder(TreeNode *root);
 void postOrder(TreeNode *root);
+void exibirArvore(TreeNode *root);
 
 // Search
 void listarAssentosDisponiveis(TreeNode *raiz);
 void listarAssentosReservados(TreeNode *raiz);
+void listarTodosAssentos(TreeNode *raiz);
 void reservarAssento(TreeNode *raiz, int poltrona);
 
 // AVL Tree
 TreeNode *construirArvoreBalanceada(ListNode **lista, int n);                                                                                           
 void balancearArvore(TreeNode **raiz);
+
+// Utils
+bool isNumber (char *str);
 
 #endif // MAIN_H

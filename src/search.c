@@ -4,8 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void listarAssentosDisponiveis(TreeNode *raiz)
-{
+void listarAssentosDisponiveis(TreeNode *raiz) {
     if (raiz != NULL)
     {
         if (raiz->disponivel)
@@ -17,8 +16,7 @@ void listarAssentosDisponiveis(TreeNode *raiz)
     }
 }
 
-void listarAssentosReservados(TreeNode *raiz)
-{
+void listarAssentosReservados(TreeNode *raiz) {
     if (raiz != NULL)
     {
         if (!raiz->disponivel)
@@ -30,29 +28,92 @@ void listarAssentosReservados(TreeNode *raiz)
     }
 }
 
-void reservarAssento(TreeNode *raiz, int poltrona)
-{
-    printf("Assentos Disponiveis: \n");
-    listarAssentosDisponiveis(raiz);
-
-    TreeNode *atual = raiz;
-    while (atual != NULL)
+void listarTodosAssentos (TreeNode *raiz) {
+    if (raiz != NULL)
     {
-        if (atual->poltrona == poltrona)
+        if (raiz->disponivel)
         {
-            if (atual->disponivel)
-            {
-                atual->disponivel = 0;
-                printf("Assento %d reservado com sucesso.\n", poltrona);
-            }
-            else
-            {
-                printf("Assento %d ja esta reservado.\n", poltrona);
-            }
-            return;
+            printf("Assento %d disponivel\n", raiz->poltrona);
         }
-        atual = (poltrona < atual->poltrona) ? atual->left : atual->right;
+        else
+        {
+            printf("Assento %d reservado\n", raiz->poltrona);
+        }
+        listarTodosAssentos(raiz->left);
+        listarTodosAssentos(raiz->right);
     }
-    printf("Assento %d nao encontrado.\n", poltrona);
-    return;
+}
+
+void reservarAssento(TreeNode *raiz, int poltrona) {
+    TreeNode *atual = raiz;
+
+    // Encontrar o nó correspondente à poltrona
+    while (atual != NULL && atual->poltrona != poltrona)
+    {
+        if (poltrona < atual->poltrona)
+            atual = atual->left;
+        else
+            atual = atual->right;
+    }
+
+    // Verificar se a poltrona foi encontrada
+    if (atual == NULL)
+    {
+        printf("Assento %d nao encontrado.\n", poltrona);
+        return;
+    }
+
+    // Oferecer opções ao usuário
+    char escrito[100];
+    int escolha;
+    do {
+    printf("1. Reservar\n");
+    printf("2. Liberar\n");
+    printf("0. Cancelar\n");
+    printf("Escolha uma opcao: ");
+    scanf(" %[^\n]s", escrito);
+    if (isNumber(escrito)) {
+        escolha = atoi(escrito);
+    }
+    else {
+        escolha = -1;
+    }
+
+    // Realizar a ação com base na escolha do usuário
+    switch (escolha)
+    {
+    case 1:
+        system(CLEAR);
+        if (atual->disponivel)
+        {
+            atual->disponivel = 0;
+            printf("Assento %d reservado com sucesso.\n", poltrona);
+        }
+        else
+        {
+            printf("Assento %d ja esta reservado.\n", poltrona);
+        }
+        break;
+    case 2:
+        system(CLEAR);
+        if (!atual->disponivel)
+        {
+            atual->disponivel = 1;
+            printf("Assento %d liberado com sucesso.\n", poltrona);
+        }
+        else
+        {
+            printf("Assento %d ja esta disponivel.\n", poltrona);
+        }
+        break;
+    case 0:
+        system(CLEAR);
+        printf("Operacao cancelada.\n");
+        break;
+    default:
+        system(CLEAR);
+        printf("Opcao invalida. Tente novamente.\n");
+        break;
+    }
+    } while (escolha != 0);
 }

@@ -29,13 +29,24 @@ TreeNode *remove_atual(TreeNode *atual) {
 
 void remove_NO_desejado(TreeNode **raiz)
 {
-    if (raiz == NULL || *raiz == NULL) return;
+    if (raiz == NULL || *raiz == NULL) {
+        printf("Arvore vazia!\n");
+        return;
+    } 
     TreeNode *atual = *raiz;
     TreeNode *ant = NULL;
+    char escrito[50];
     int num = 0;
     int found = 0;
-    printf("Digite o numero que deseja remover: ");
-    scanf("%d", &num);
+    printf("Digite a poltrona que deseja remover: ");
+    scanf(" %[^\n]s", escrito);
+    if (isNumber(escrito)) {
+        num = atoi(escrito);
+    }
+    else {
+        printf("Digite um numero valido!\n");
+        return;
+    }
     while (atual != NULL)
     {
         if (num == atual->poltrona)
@@ -74,6 +85,8 @@ void remove_NO_desejado(TreeNode **raiz)
     if (!found)
     {
         printf("Elemento nao encontrado!\n");
+    } else {
+        printf("Elemento removido com sucesso!\n");
     }
 }
 

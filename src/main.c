@@ -2,26 +2,36 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
+#include <stdbool.h>
 
+bool isNumber (char *str) {
+    while (*str != '\0')
+    {
+        if (!isdigit(*str))
+        {
+            return false;
+        }
+        str++;
+    }
+    return true;
+}
 
-void menu()
-{
+void menu() {
     printf("\nMenu:\n");
     printf("1. Inserir Assento\n");
-    printf("2. Balancear Arvore\n");
-    printf("3. Exibir Arvore (Pre-Ordem)\n");
-    printf("4. Exibir Arvore (In-Ordem)\n");
-    printf("5. Exibir Arvore (Pos-Ordem)\n");
-    printf("6. Reservar Assento\n");
-    printf("7. Remover Assento\n");
-    printf("8. Sair\n");
+    printf("2. Organizar Assentos\n");
+    printf("3. Exibir Assentos\n");
+    printf("4. Remover Assento\n");
+    printf("5. Area de Reservas\n");
+    printf("0. Sair\n");
     printf("Escolha uma opcao: ");
 }
 
-int main()
-{
+int main() {
     TreeNode *raiz = NULL;
-    int opcao, poltrona;
+    char escrito[50];
+    int opcao, poltrona, opcaoAssentos;
 
     printf("  _______ _ _____    ______    ________   ______    _______   \n");
     printf(" |__   __| |_____| ||______|| |__   __|  ||_____|  / ______|| \n");
@@ -31,85 +41,107 @@ int main()
     printf("    |_|  |_|_____| ||      ||    | |     ||    ||. ||______/      \n");
 
 
-    do
-    {
+    do {
         menu();
-        printf("Escolha uma opcao: ");
-        scanf("%d", &opcao);
+        scanf(" %[^\n]s", escrito);
+        if (isNumber(escrito)) {
+            opcao = atoi(escrito);
+        }
+        else {
+            opcao = -1;
+        }
 
-        switch (opcao)
-        {
+        switch (opcao) {
         case 1:
-            system("cls");
+            system(CLEAR);
             printf("Digite o numero do assento: ");
-            scanf("%d", &poltrona);
+            scanf(" %[^\n]s", escrito);
+            if (isNumber(escrito)) {
+                poltrona = atoi(escrito);
+            }
+            else {
+                printf("Numero invalido. Tente novamente.\n");
+                break;
+            }
             raiz = inserirNo(raiz, poltrona);
             break;
         case 2:
-            system("cls");
+            system(CLEAR);
             balancearArvore(&raiz);
             break;
         case 3:
-            system("cls");
-            preOrder(raiz);
+            system(CLEAR);
+            exibirArvore(raiz);
             break;
         case 4:
-            system("cls");
-            inOrder(raiz);
+            system(CLEAR);
+            remove_NO_desejado(&raiz);
             break;
         case 5:
-            system("cls");
-            postOrder(raiz);
-            break;
-        case 6:
-            system("cls");
-            int opcaoAssentos = 0;
-            while (opcaoAssentos != 4)
-            {
+            system(CLEAR);
+            do {
+                if (raiz == NULL) {
+                    system(CLEAR);
+                    printf("Nao ha assentos cadastrados.\n");
+                    break;
+                }
                 printf("Selecione opcao desejada\n");
-                printf("1. Assentos disponiveis:\n");
-                printf("2. Assentos reservados:\n");
-                printf("3. Reservar assento:\n");
-                printf("4. Sair\n");
+                printf("1. Assentos disponiveis\n");
+                printf("2. Assentos reservados\n");
+                printf("3. Alterar Reservas\n");
+                printf("0. Voltar\n");
                 printf("Escolha uma opcao: ");
-                scanf("%d", &opcaoAssentos);
+                scanf(" %[^\n]s", escrito);
+                if (isNumber(escrito)) {
+                    opcaoAssentos = atoi(escrito);
+                }
+                else {
+                    opcaoAssentos = -1;
+                }
 
-                switch (opcaoAssentos)
-                {
+                switch (opcaoAssentos) {
                 case 1:
-                    system("cls");
+                    system(CLEAR);
                     listarAssentosDisponiveis(raiz);
+                    printf("\n");
                     break;
                 case 2:
-                    system("cls");
+                    system(CLEAR);
                     listarAssentosReservados(raiz);
+                    printf("\n");
                     break;
                 case 3:
-                    system("cls");
-                    printf("Digite o numero do assento que deseja reservar: ");
-                    scanf("%d", &poltrona);
+                    system(CLEAR);
+                    listarTodosAssentos(raiz);
+                    printf("\n");
+                    printf("Digite o numero do assento que deseja alterar: ");
+                    scanf(" %[^\n]s", escrito);
+                    if (isNumber(escrito)) {
+                        poltrona = atoi(escrito);
+                    }
+                    else {
+                        printf("Numero invalido. Tente novamente.\n");
+                        break;
+                    }
                     reservarAssento(raiz, poltrona);
                     break;
-                case 4:
-                    system("cls");
+                case 0:
+                    system(CLEAR);
                     printf("Saindo da area de reserva de poltronas\n");
                     break;
                 default:
+                    system(CLEAR);
                     printf("Opcao invalida. Tente novamente.\n");
                 }
-            }
+            } while (opcaoAssentos != 0);
             break;
-        case 7:
-            system("cls");
-            remove_NO_desejado(&raiz);
-            break;
-        case 8:
+        case 0:
             printf("Saindo...\n");
             break;
         default:
             printf("Opcao invalida. Tente novamente.\n");
         }
-    } while (opcao != 8);
+    } while (opcao != 0);
 
     liberaArvore(raiz);
     return 0;
