@@ -282,26 +282,63 @@ void reservarAssento(TreeNode *raiz, int poltrona)
     listarAssentosDisponiveis(raiz);
 
     TreeNode *atual = raiz;
-    while (atual != NULL)
+    TreeNode *pai = NULL;
+
+    // Encontrar o nó correspondente à poltrona
+    while (atual != NULL && atual->poltrona != poltrona)
     {
-        if (atual->poltrona == poltrona)
-        {
-            if (atual->disponivel)
-            {
-                atual->disponivel = 0;
-                printf("Assento %d reservado com sucesso.\n", poltrona);
-            }
-            else
-            {
-                printf("Assento %d ja esta reservado.\n", poltrona);
-            }
-            return;
-        }
-        atual = (poltrona < atual->poltrona) ? atual->left : atual->right;
+        pai = atual;
+        if (poltrona < atual->poltrona)
+            atual = atual->left;
+        else
+            atual = atual->right;
     }
-    printf("Assento %d nao encontrado.\n", poltrona);
-    return;
+
+    // Verificar se a poltrona foi encontrada
+    if (atual == NULL)
+    {
+        printf("Assento %d nao encontrado.\n", poltrona);
+        return;
+    }
+
+    // Oferecer opções ao usuário
+    printf("1. Reservar\n");
+    printf("2. Liberar\n");
+    printf("Escolha uma opcao: ");
+    int escolha;
+    scanf("%d", &escolha);
+
+    // Realizar a ação com base na escolha do usuário
+    switch (escolha)
+    {
+    case 1:
+        if (atual->disponivel)
+        {
+            atual->disponivel = 0;
+            printf("Assento %d reservado com sucesso.\n", poltrona);
+        }
+        else
+        {
+            printf("Assento %d já está reservado.\n", poltrona);
+        }
+        break;
+    case 2:
+        if (!atual->disponivel)
+        {
+            atual->disponivel = 1;
+            printf("Assento %d liberado com sucesso.\n", poltrona);
+        }
+        else
+        {
+            printf("Assento %d já está disponível.\n", poltrona);
+        }
+        break;
+    default:
+        printf("Opcao inválida. Tente novamente.\n");
+        break;
+    }
 }
+
 
 void menu()
 {
