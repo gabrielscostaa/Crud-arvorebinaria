@@ -121,14 +121,14 @@ TreeNode *inserirNo(TreeNode *raiz, int poltrona);
 void preOrder(TreeNode *root);
 void inOrder(TreeNode *root);
 void postOrder(TreeNode *root);
-void liberaArvore(TreeNode *raiz);
-TreeNode *construirArvoreBalanceada(ListNode **lista, int n);
+TreeNode *construirArvoreBalanceada(ListNode **lista, int n);                                                                                           
 void balancearArvore(TreeNode **raiz);
 TreeNode *remove_atual(TreeNode *atual);
 void remove_NO_desejado(TreeNode **raiz);
+void liberaArvore(TreeNode *raiz);
 
 
-struct TreeNode *criarNo(int poltrona)
+TreeNode *criarNo(int poltrona)
 {
     struct TreeNode *no = (struct TreeNode *)malloc(sizeof(struct TreeNode));
     if (no != NULL)
