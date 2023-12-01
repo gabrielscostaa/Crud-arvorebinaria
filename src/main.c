@@ -134,6 +134,7 @@ int main() {
             printf("Saindo...\n");
             break;
         default:
+            system(CLEAR);
             printf("Opcao invalida. Tente novamente.\n");
         }
     } while (opcao != 0);
